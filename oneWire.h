@@ -52,15 +52,6 @@ typedef enum{
 //non implemented functions
 void InitializeOneWire();
 
-//private functions
-void resetPulse();
-uint8_t readBit();
-void writeZero();
-void writeOne();
-uint8_t writeInstruction(oneWire_instructionSet instruction);
-uint8_t readInstruction(oneWire_instructionSet instruction);
-uint8_t readFromDevice(oneWire_instructionSet instruction);
-uint8_t readRisingEdge();
 
 //public functions
 oneWire_status TriggerTemperatureConversion();
