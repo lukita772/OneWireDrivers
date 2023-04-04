@@ -9,6 +9,16 @@
 #include "main.h"
 #include "oneWire.h"
 
+//private prototypes
+static void resetPulse();
+static uint8_t readBit();
+static void writeZero();
+static void writeOne();
+static uint8_t writeInstruction(oneWire_instructionSet instruction);
+static uint8_t readInstruction(oneWire_instructionSet instruction);
+static uint8_t readFromDevice(oneWire_instructionSet instruction);
+static uint8_t readRisingEdge();
+
 // Variables globales
 static int16_t Temperature = 0;
 static oneWire_ROM_DATA oneWire_ROM = {0,0,0};
@@ -111,7 +121,7 @@ oneWire_status TriggerTemperatureConversion()
 	return PENDING;
 }
 
-uint8_t readFromDevice(oneWire_instructionSet instruction)
+static uint8_t readFromDevice(oneWire_instructionSet instruction)
 {
 	static uint8_t state = WRITING;
 
@@ -149,7 +159,7 @@ uint8_t readFromDevice(oneWire_instructionSet instruction)
  * brief: Private function, avoid to use outside this function
  * Author: LAGOSTINI
  */
-uint8_t readInstruction(oneWire_instructionSet instruction)
+static uint8_t readInstruction(oneWire_instructionSet instruction)
 {
 	static uint8_t currBit = 0;
 	static uint8_t i = 0;
@@ -223,7 +233,7 @@ uint8_t readInstruction(oneWire_instructionSet instruction)
  * brief: Private function, avoid to use outside this function
  * Author: LAGOSTINI
  */
-uint8_t writeInstruction(oneWire_instructionSet instruction)
+static uint8_t writeInstruction(oneWire_instructionSet instruction)
 {
 	static uint8_t mask = 0b00000001;
 
@@ -246,7 +256,7 @@ uint8_t writeInstruction(oneWire_instructionSet instruction)
 	return PENDING;
 }
 
-uint8_t readRisingEdge()
+static uint8_t readRisingEdge()
 {
 	static uint8_t currSt = 0;
 	static uint8_t bitCounter= 0;
@@ -287,7 +297,7 @@ uint8_t readRisingEdge()
  * brief: Write a '0' after the next time slot
  * Author: LAGOSTINI
  */
-void writeZero()
+static void writeZero()
 {
 	uint16_t counter = 0;
 
@@ -306,7 +316,7 @@ void writeZero()
  * brief: Write a '1' after the next time slot
  * Author: LAGOSTINI
  */
-void writeOne()
+static void writeOne()
 {
 	uint16_t counter = 0;
 
@@ -324,7 +334,7 @@ void writeOne()
  * brief: Do a 480-500us pulse after the next time slot (time slot system disabled in this period)
  * Author: LAGOSTINI
  */
-void resetPulse()
+static void resetPulse()
 {
 	uint32_t counter = 0;
 	while(!NextTimeSlot_flag);
@@ -345,7 +355,7 @@ void resetPulse()
  * brief: Wait for the next time slot, wait a few microsecunds, free the wire and read the pin
  * Author: LAGOSTINI
  */
-uint8_t readBit()
+static uint8_t readBit()
 {
 	uint16_t bit = 0;
 	uint16_t counter = 0;
